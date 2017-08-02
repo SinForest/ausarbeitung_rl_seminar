@@ -1,0 +1,13 @@
+#!/bin/sh
+
+LYX_FILENAME="ausarbeitung"
+
+git add $LYX_FILENAME.lyx
+
+lyx -e pdflatex $LYX_FILENAME.lyx
+git add $LYX_FILENAME.tex
+
+lyx -e pdf2 $LYX_FILENAME.lyx
+git add $LYX_FILENAME.pdf
+
+sleep 1
