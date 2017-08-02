@@ -108,11 +108,12 @@ geeigneten Trade-Off zu finden.
 
 Um ein MDP zu lösen, lässt sich auf ein Bewertungsschema für Zustände
 zurückgreifen. Hierbei ergibt sich die Bewertung eines Zustandes aus
-der Gesamtbelohung, die der Agent zu erwarteten hat, wenn er eine
-Simulation in besagtem Zustand startet und von dort aus optimal handelt.
-Die Markov-Bedingung erlaubt uns in jedem Zustand anzunehmen, wir
-hätten die Simulation gerade erst gestartet, da es keine Faktoren
-gibt, die von bereits vergangenen Ereignissen abhängen.
+der \textbf{Gesamtbelohung, die der Agent zu erwarteten hat, wenn
+er eine Simulation in besagtem Zustand startet, die optimale Aktion
+ausführt und von dort an optimal handelt}. Die Markov-Bedingung erlaubt
+uns in jedem Zustand anzunehmen, wir hätten die Simulation gerade
+erst gestartet, da es keine Faktoren gibt, die von bereits vergangenen
+Ereignissen abhängen.
 
 Da die Bewertung jedes Zustandes angibt, welche Belohnung von ihm
 aus zu erwarten ist, lässt sich die Bewertung wie folgt rekursiv definieren:
@@ -122,19 +123,101 @@ V^{\ast}\left(s\right)=\max_{a\in A}\sum_{s^{\prime}\in S}T\left(s,a,s^{\prime}\
 \]
 
 In der eckigen Klammer befindet sich die unmittelbare Belohung, wenn
-ich von Zustand $s$ über Aktion $a$ in Zustand $s^{\prime}$ gelandet
-bin, addiert zur zu erwartenden Belohnung von Zustand $s^{\prime}$
+der Agent von Zustand $s$ über Aktion $a$ in Zustand $s^{\prime}$
+gelandet ist, addiert zur zu erwartenden Belohnung von Zustand $s^{\prime}$
 aus (welche mit $\gamma$ multipliziert wurde, da eine Aktion vorrüber
 ist).
 
+Dieser Wert wird mit der Wahrscheinlichkeit des Auftretens dieses
+Übergangs multipliziert und durch Aufsummieren über alle möglichen
+Zustände $s^{\prime}$ (\emph{man bedenke, dass $T$ nur für Zustände,
+die von $s$ über $a$ erreicht werden können $>0$ ist}) zum Erwartungswert
+für eine Aktion $a$.
+
+Da $V^{\ast}$ als erwartete Belohnung definiert ist, wenn der Agent
+immer optimal handelt, ist es der Erwartungswert der Aktion, von welcher
+die höchste Belohnung erwartet wird.
 
 \subsection{Value Iteration}
 
+Durch die rekursive Definition von $V^{\ast}$ lässt es sich nicht
+trivial berechnen. Als möglicher Lösungsansatz bietet sich daher die
+Value Iteration an. Hierzu wird das MDP zeitlich begrenzt und $V^{\left(k\right)}$
+definiert als \emph{Gesamtbelohung, die der Agent zu erwarteten hat,
+wenn er eine Simulation in besagtem Zustand startet, die optimale
+Aktion ausführt und von dort an optimal handelt, }\textbf{\emph{aber
+nur noch $k$ Schritte übrig hat}}.
+
+$V^{\left(0\right)}$ lässt sich einfach bestimmen, da es $0$ für
+jeden Zustand sein muss. Auch $V^{\left(1\right)}$ folgt oft direkt
+aus der Problemdefinition. In unserem Beispiel wäre es $-100$ bzw
+$+100$ für die ``bunten'' Zustände und $-2$ für alle anderen,
+da jeder Schritt $-2$ Belohnung bringt.
+
+Ein beliebiges $V^{\left(k\right)}$ lässt sich einfach berechnen.
+Dazu muss nur die Formel für $V^{\ast}$leicht angepasst werden:
+
+\[
+V^{\left(k\right)}\left(s\right)=\max_{a\in A}\sum_{s^{\prime}\in S}T\left(s,a,s^{\prime}\right)\left[R\left(s,a,s^{\prime}\right)+\gamma\cdot V^{\left(k-1\right)}\left(s^{\prime}\right)\right]
+\]
+
+Da sich das hintere $V^{\ast}$ in der Gleichung ja auf Geschehnisse
+bezog, die einen Zeitschritt später passieren, muss es bei der Berechnung
+von $V^{\left(k\right)}$ durch ein $V^{\left(k-1\right)}$ ersetzt
+werden, da der Agent im zeitlich beschränkten MDP einen Zeitschritt
+später selbstverständlich nur noch einen Zeitschritt weniger zur Verfügung
+hat. 
+
+\includegraphics[width=0.95\textwidth]{media/example_value_iteration}
+
+Für MDPs, deren maximal erzielbare Belohung nach oben beschränkt ist,
+wird $V^{\left(k\right)}$ für $k\longrightarrow\infty$ konvergieren,
+da sich auch mit mehr Schritten kein besseres Ergebnis mehr erzielen
+lassen wird. Durch ein $\gamma<1$ kann dies <> werden.
+
+Für ein geeignet großes $k$ gilt also $V^{\left(k\right)}=V^{\ast}\pm\varepsilon$
+mit vernachlässigbarem $\varepsilon$ (\emph{z.B. kleiner als Maschinengenauigkeit
+oder kleiner als eine vorher gewählte Toleranz}), da $V^{\left(\infty\right)}$
+genau unserer Definition für ein $V^{\ast}$ im nicht zeitlich beschränkten
+MDP entspricht.
+
 \subsection{Policy Extraction}
+
+Mit Hilfe der optimalen V-Values $V^{\ast}$ lässt sich jetzt eine
+optimale Policy für das MDP berechnen. Dazu simuliert man einen weiteren
+Schritt der Value Iteration. Anstatt nun aber tatsächlich das Maximum
+über alle $a$ zu bestimmen, weisen wir dem aktullen Zustand die Aktion
+zu, die von ihm aus die erwartete Belohnung maximieren würde.
+
+\[
+\pi^{*}\left(s\right)=\underset{a\in A}{\textrm{argmax}}\sum_{s^{\prime}\in S}T\left(s,a,s^{\prime}\right)\left[R\left(s,a,s^{\prime}\right)+\gamma\cdot V^{\ast}\left(s^{\prime}\right)\right]
+\]
+
+Auf diese Weise haben wir eine optimale Strategie erzeugt und somit
+das MDP gelöst.
+
+\includegraphics[width=0.62\textwidth]{media/example_policy_extraction}
 
 \section{Reinforcement Learning}
 
+Reinforcement Learning ist ein Machine-Learning-Konzept, in welchem
+ein Agent ohne anfängliche Informationen über sein Umfeld oder die
+Auswirkungen seines Handelns dazu trainiert werden soll, die maximale
+Belohnung zu erhalten. 
+
 \subsection{Verbindung zu MDPs}
+
+Während sich zum Beispiel mit Value Iteration und Policy Extraction
+MDPs lösen lassen, bei denen alle Informationen vorhanden sind, bietet
+Reinforcement Learning eine Reihe von Algorithmen bei welchen vom
+Agenten keine Kenntnis von $T\left(s,a,s^{\prime}\right)$ oder $R\left(s,a,s^{\prime}\right)$
+vorrausgesetzt werden. Der Agent muss sich also selbstständig über
+Aktionen durch die Zustände bewegen, um die verschiedenen Übergänge
+und deren Belohnungen und Wahrscheinlichkeiten selbst zu erfahren.
+
+Da der Agent erst nach jedem Übergang die erhaltene Belohnung von
+extern mitgeteilt bekommt, lassen sich so bei der Problemmodellierung
+einfache Möglichkeiten implementieren, Belohnungen zu verteilen. 
 
 \subsection{Verschiedene Ansätze}
 
@@ -144,9 +227,13 @@ ist).
 
 \subsection{State Features}
 
+\subsection{Andere Algoritmen}
+
 \subsection{Deep Q-Learning}
 
 \section{Fazit}
+
+\section{Kurzgeschichte (?)}
 
 \section{Quellen}
 \end{document}
