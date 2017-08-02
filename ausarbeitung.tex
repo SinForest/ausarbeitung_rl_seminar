@@ -1,26 +1,136 @@
 %% LyX 2.2.3 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
-\documentclass[english]{article}
+\documentclass[11pt,english]{article}
 \usepackage[T1]{fontenc}
 \usepackage[latin9]{inputenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=3cm,bmargin=3.5cm,lmargin=2.5cm,rmargin=2.5cm}
+\setlength{\parskip}{\smallskipamount}
+\setlength{\parindent}{0pt}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
 \usepackage{babel}
 \begin{document}
 
 \section{Abstract}
 
+
 \section{Markov Entscheidungs-Probleme}
 
-\subsection{Das generelle Problem}
+Markov Entscheidungs-Probleme (kurz \textbf{MDP} für \emph{markov
+decision process}) sind ein Modell für Probleme, bei denen ein Agent
+versucht die größtmögliche Belohnung (\emph{reward}) zu erzielen.
+Er bewegt sich dazu durch eine Menge von Zuständen (\emph{states})
+indem er aus einer Menge von Aktionen (\emph{actions}) wählt. Welchen
+Zustand der Agent erreicht ist nicht deterministisch, die Wahrscheinlichkeiten
+sind jedoch nur von der gewählten Aktion und dem aktuellen Zustand
+abhängig. Die Belohnung, die der Agent für einen Übergang erhält,
+wird durch Ausgangs- und Endzustand des Übergangs so wie die gewählte
+Aktion bestimmt. Der Agent startet in einem Startzustand, es kann
+diverse Endzustände geben, nach deren Erreichen keine Aktionen mehr
+ausgeführt werden können.
+
+Ziel ist es, eine Strategie (\emph{policy}) zu finden, welche jedem
+Zustand die Aktion zuordnet, durch die der höchste Gesamtgewinn (also
+die höchste Summe über alle erzielten Gewinne) erwartet werden kann.
+
+\subsection{Ein Beispiel}
+
+In diesem Beispiel werden die Zustände durch die Felder eines $4\times4$-Grids
+visualisiert. Der Startzustand $\left(3,0\right)$ ist durch ein großes
+$S$ markiert, die Zustände mit einem $X$ sind nicht erreichbar.
+
+\includegraphics[scale=0.35]{media/example}
+
+Die Menge der Aktionen besteht aus 4 Elementen, jedes symbolisiert
+einen Schritt in eine der vier Himmelsrichtungen. Beim Ausführen einer
+Aktion landet der Agent mit einer Chance von $0.8$ ein Feld weiter
+in der gewählten Himmelsrichtung, so wie mit je einer Chance von $0.1$
+in einer der zwei orthogonalen Richtungen. Würde der Agent hierbei
+aif einem Feld landen, welches er nicht betreten kann (eines der mit
+$X$ markierten, oder außerhalb des Grids), bleibt er auf seinem Feld.
+
+Von den bunten Feldern aus führt jede Aktion mit einer Chance von
+$1$ in den Endzustand. Der Agent erhält für diesen Übergang die auf
+dem Feld verzeichnete Belohnung (100 oder -100). Für jede andere Aktion
+wird eine Belohnung von -2 verbucht.
 
 \subsection{Notation}
 
+Zur Beschreibung eines MDPs werden einige Notationen benötigt, die
+hier angegeben werden. \emph{(Zu einigen Notationen werden Beispiele
+zum oben genannten Beispiel angegeben.)} Zur Problemstellung selbst
+gehören:
+\begin{itemize}
+\item $S=\left\{ s_{1},\ldots,s_{n}\right\} $ ist die Menge der \textbf{Zustände}.
+Die Elemente der Menge können beliebig benannt werden.
+\item $A=\left\{ a_{1},\ldots,a_{n}\right\} $ ist die Menge der \textbf{Aktionen}.
+Auch diese Elemente können beliebig benannt werden.
+\item $T:S\times A\times S\rightarrow\left[0,1\right]$ ist die \textbf{Übergangs-Funktion}
+(\emph{transition function}). $T\left(s,a,s^{\prime}\right)$ beschreibt
+die Wahrscheinlichkeit, mit der der Agent von Zustand $s$ in den
+Zustand $s^{\prime}$ wechselt, wenn er Aktion $a$ ausführt. Eine
+allgemeinere, jedoch hier nicht verwendete Schreibweise wäre $T\left(s,a,s^{\prime}\right)=p\left(s^{\prime}|s,a\right)$.
+\begin{align*}
+T(s_{0,2},a_{E},s_{0,3}) & =0.8 & \text{(Agent wählt Osten und kommt dort an)}\\
+T(s_{0,2},a_{E},s_{0,2}) & =0.1 & \text{(Agent wählt Osten, geht nach Norden, kein valider Zug)}\\
+T(s_{0,2},a_{E},s_{1,2}) & =0.1 & \text{(Agent wählt Osten, geht nach Süden)}\\
+T(s_{0,2},a_{E},s_{0,1}) & =0.0 & \text{(Agent wählt Osten, Bewegung nach Westen unmöglich)}\\
+T(s_{1,2},\_,s_{end}) & =1.0 & \text{(jede Aktion von bunten Feldern führt zum Endzustand)}
+\end{align*}
+\item $R:S\times A\times S\rightarrow\mathbb{R}$ ist die \textbf{Belohnungs-Funktion}
+(\emph{reward function}). $R\left(s,a,s^{\prime}\right)$ ordnet dem
+Übergang von Zustand $s$ nach Zustand $s^{\prime}$ mit Hilfe von
+Aktion $a$ eine Belohung zu.
+\begin{align*}
+R(s_{1,2},\_,s_{end}) & =-100 & \text{(Belohnung von buntem Feld)}\\
+R(s_{1,3},\_,s_{end}) & =+100 & \text{(Belohnung von buntem Feld)}\\
+R(s_{0,2},a_{N},s_{0,1}) & =-2 & \text{(jede Bewegung kostet 2 Belohung)}
+\end{align*}
+\end{itemize}
+Zum Lösen der Probleme werden folgende Notationen verwendet:
+\begin{itemize}
+\item $\pi\left(s\right)$ ist eine \textbf{Policy}, die dem Zustand $s$
+die optimale Aktion zuordnet. Hierbei beschreibt $\pi$ eine Policy
+im Allgemeinen, $\pi^{\ast}$ die optimale Policy.
+\item $\gamma\in\left[0,1\right]$ ist der sogenannte \textbf{Discount-Faktor}.
+Für den Agenten werden nach jeder Aktion alle noch erreichbaren Belohnungen
+mit $\gamma$ multipliziert, damit er kürzere Wege, die zur selben
+Belohnung führen, bevorzugen wird. Mit $\gamma=1$ ist für den Agenten
+ein langer Weg ebenso gut wie ein kurzer, solange er die selbe Belohnung
+erhält. Mit $\gamma=0$ wird der Agent nicht mehr vorausschauend planen,
+da für ihn nur die nächste Belohnung Wert hat. Es gilt also, einen
+geeigneten Trade-Off zu finden.
+\end{itemize}
+
 \subsection{V-Values}
+
+Um ein MDP zu lösen, lässt sich auf ein Bewertungsschema für Zustände
+zurückgreifen. Hierbei ergibt sich die Bewertung eines Zustandes aus
+der Gesamtbelohung, die der Agent zu erwarteten hat, wenn er eine
+Simulation in besagtem Zustand startet und von dort aus optimal handelt.
+Die Markov-Bedingung erlaubt uns in jedem Zustand anzunehmen, wir
+hätten die Simulation gerade erst gestartet, da es keine Faktoren
+gibt, die von bereits vergangenen Ereignissen abhängen.
+
+Da die Bewertung jedes Zustandes angibt, welche Belohnung von ihm
+aus zu erwarten ist, lässt sich die Bewertung wie folgt rekursiv definieren:
+
+\[
+V^{\ast}\left(s\right)=\max_{a\in A}\sum_{s^{\prime}\in S}T\left(s,a,s^{\prime}\right)\left[R\left(s,a,s^{\prime}\right)+\gamma\cdot V^{\ast}\left(s^{\prime}\right)\right]
+\]
+
+In der eckigen Klammer befindet sich die unmittelbare Belohung, wenn
+ich von Zustand $s$ über Aktion $a$ in Zustand $s^{\prime}$ gelandet
+bin, addiert zur zu erwartenden Belohnung von Zustand $s^{\prime}$
+aus (welche mit $\gamma$ multipliziert wurde, da eine Aktion vorrüber
+ist).
+
 
 \subsection{Value Iteration}
 
 \subsection{Policy Extraction}
-
-\subsection{Beispiele (?)}
 
 \section{Reinforcement Learning}
 
