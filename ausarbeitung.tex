@@ -219,7 +219,47 @@ Da der Agent erst nach jedem Übergang die erhaltene Belohnung von
 extern mitgeteilt bekommt, lassen sich so bei der Problemmodellierung
 einfache Möglichkeiten implementieren, Belohnungen zu verteilen. 
 
-\subsection{Verschiedene Ansätze}
+\subsection{Model Based Approaches}
+
+Die erste Möglichkeit an dieses Problem heranzugehen wäre ein \textbf{model
+based approach}. Das bedeutet, der Agent versucht zunächst, die fehlenden
+Teile des Modells (also vor allem $T$ und $R$) durch Samples zu
+approximieren. Sobald diese annährend bekannt sind, lässt sich das
+Problem mit beliebigen MDP-Algorithmen (wie zum Beispiel Value Iteration
+und Policy Extraction) lösen. 
+
+Dieser Ansatz erfordert sehr große Mengen an Samples welche zur Auswertung
+gleichzeitig zur Verfügung stehen müssen. Ausserdem erfordert das
+Sammeln der Samples einen großen Grad an Freiheit in der Bewegung
+des Agenten durch die Zustände, was zum Beispiel bei Anwendungen in
+der Robotik oft nicht gegeben ist. Bei sehr großen (oder sogar indiskreten)
+Zustands-Mengen ist dieser Ansatz also nur schwer umsetzbar.
+
+\subsection{Temporal Difference Learning}
+
+Als weiterer Ansatz bietet sich das \textbf{temporal difference learning}
+an. Die Idee dahinter ist, dass mit zufällig gewählten V-Values begonnen
+wird und diese langsam iterativ verbessert werden.
+
+Nach jeder Aktion (und deren Feedback) überprüft der Agent wie sich
+die ihm über V-Values versprochene erwartete Belohunung im Vergleich
+zur direkt erhaltenen Belohung und der nun in Aussicht stehenden erwarteten
+Belohnung verhält und passt die V-Values des eben verlassenen Zustandes
+geringfügig dementsprechend an.
+
+\[
+V\left(s\right)\leftarrow V\left(s\right)+\alpha\left[r+\gamma V\left(s^{\prime}\right)-V\left(s\right)\right]
+\]
+ Die Bewertung von Zustand $s$ wird um einen kleinen Teil $\left(\alpha<0\right)$
+der Differenz zwischen versprochener $\left(V\left(s\right)\right)$
+und erfahrener $\left(r+\gamma V\left(s^{\prime}\right)\right)$ Belohung
+angepasst. Die Lernrate (\emph{learning rate}) $\alpha$ ist dabei
+ein wichtiger Hyperparameter und entscheident für die Konvergenz des
+Verfahrens. Für ein sich verringerndes $\alpha_{i}$ ($\alpha$ im
+$i$-ten Zeitschritt) mit $\sum a_{i}=\infty$ und $\sum a_{i}^{2}<\infty$
+konvergiert das Verfahren in jedem Fall gegen die optimale Lösung
+(sofern es eine gibt). Aber auch für konstante, sehr kleine $\alpha$
+konvergiert das Verfahren in der Praxis sehr oft.
 
 \subsection{Q-Values/Q-Learning}
 

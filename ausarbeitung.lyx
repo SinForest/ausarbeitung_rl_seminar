@@ -801,7 +801,134 @@ Beispiel?
 \end_layout
 
 \begin_layout Subsection
-Verschiedene Ansätze
+Model Based Approaches
+\end_layout
+
+\begin_layout Standard
+Die erste Möglichkeit an dieses Problem heranzugehen wäre ein 
+\series bold
+model based approach
+\series default
+.
+ Das bedeutet, der Agent versucht zunächst, die fehlenden Teile des Modells
+ (also vor allem 
+\begin_inset Formula $T$
+\end_inset
+
+ und 
+\begin_inset Formula $R$
+\end_inset
+
+) durch Samples zu approximieren.
+ Sobald diese annährend bekannt sind, lässt sich das Problem mit beliebigen
+ MDP-Algorithmen (wie zum Beispiel Value Iteration und Policy Extraction)
+ lösen.
+ 
+\end_layout
+
+\begin_layout Standard
+Dieser Ansatz erfordert sehr große Mengen an Samples welche zur Auswertung
+ gleichzeitig zur Verfügung stehen müssen.
+ Ausserdem erfordert das Sammeln der Samples einen großen Grad an Freiheit
+ in der Bewegung des Agenten durch die Zustände, was zum Beispiel bei Anwendunge
+n in der Robotik oft nicht gegeben ist.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Beispiel? Fußnote?
+\end_layout
+
+\end_inset
+
+ Bei sehr großen (oder sogar indiskreten) Zustands-Mengen ist dieser Ansatz
+ also nur schwer umsetzbar.
+\end_layout
+
+\begin_layout Subsection
+Temporal Difference Learning
+\end_layout
+
+\begin_layout Standard
+Als weiterer Ansatz bietet sich das 
+\series bold
+temporal difference learning
+\series default
+ an.
+ Die Idee dahinter ist, dass mit zufällig gewählten V-Values begonnen wird
+ und diese langsam iterativ verbessert werden.
+\end_layout
+
+\begin_layout Standard
+Nach jeder Aktion (und deren Feedback) überprüft der Agent wie sich die
+ ihm über V-Values versprochene erwartete Belohunung im Vergleich zur direkt
+ erhaltenen Belohung und der nun in Aussicht stehenden erwarteten Belohnung
+ verhält und passt die V-Values des eben verlassenen Zustandes geringfügig
+ dementsprechend an.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+V\left(s\right)\leftarrow V\left(s\right)+\alpha\left[r+\gamma V\left(s^{\prime}\right)-V\left(s\right)\right]
+\]
+
+\end_inset
+
+ Die Bewertung von Zustand 
+\begin_inset Formula $s$
+\end_inset
+
+ wird um einen kleinen Teil 
+\begin_inset Formula $\left(\alpha<0\right)$
+\end_inset
+
+ der Differenz zwischen versprochener 
+\begin_inset Formula $\left(V\left(s\right)\right)$
+\end_inset
+
+ und erfahrener 
+\begin_inset Formula $\left(r+\gamma V\left(s^{\prime}\right)\right)$
+\end_inset
+
+ Belohung angepasst.
+ Die Lernrate (
+\emph on
+learning rate
+\emph default
+) 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ ist dabei ein wichtiger Hyperparameter und entscheident für die Konvergenz
+ des Verfahrens.
+ Für ein sich verringerndes 
+\begin_inset Formula $\alpha_{i}$
+\end_inset
+
+ (
+\begin_inset Formula $\alpha$
+\end_inset
+
+ im 
+\begin_inset Formula $i$
+\end_inset
+
+-ten Zeitschritt) mit 
+\begin_inset Formula $\sum a_{i}=\infty$
+\end_inset
+
+ und 
+\begin_inset Formula $\sum a_{i}^{2}<\infty$
+\end_inset
+
+ konvergiert das Verfahren in jedem Fall gegen die optimale Lösung (sofern
+ es eine gibt).
+ Aber auch für konstante, sehr kleine 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ konvergiert das Verfahren in der Praxis sehr oft.
 \end_layout
 
 \begin_layout Subsection
