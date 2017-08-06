@@ -75,6 +75,34 @@
 
 \begin_body
 
+\begin_layout Title
+Einführung in das Reinforcement Learning
+\end_layout
+
+\begin_layout Author
+Patrick Dammann
+\end_layout
+
+\begin_layout Date
+heute
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Abstract
 \end_layout
@@ -931,20 +959,449 @@ learning rate
  konvergiert das Verfahren in der Praxis sehr oft.
 \end_layout
 
+\begin_layout Standard
+Oft lässt sich der Rechenaufwand für das Lernen auch verkleinern, in dem
+ beim Erkunden der Umgebung zunächst viele Samples gesammelt wurden und
+ das Lernen danach auf allen gesammelten Samples am Stück passiert.
+ Erst danach wird die Policy aktualisiert, damit wieder neue Samples gesammelt
+ werden können.
+ Dies wird bis zur Konvergenz wiederholt.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Probleme mit Policy?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Q-Values/Q-Learning
+\end_layout
+
+\begin_layout Standard
+Das explizite Aktualisieren der Policy kann entfallen, wenn die Policy direkt
+ implizit mitgelernt wird.
+ Diese Idee kann durch die sogenannten Q-Values umgesetzt werden.
+ Hierbei werden statt einem Wert pro State 
+\begin_inset Formula $\left|A\right|$
+\end_inset
+
+ Werte pro State gespeichert, jeweils einer pro ausführbarer Aktion.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename media/example_q_values.svg
+	lyxscale 15
+	scale 25
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Es ist also 
+\begin_inset Formula $Q\left(s,a\right)$
+\end_inset
+
+ definiert als 
+\emph on
+Gesamtbelohung, die der Agent zu erwarteten hat, wenn er eine Simulation
+ in besagtem Zustand startet, 
+\series bold
+Aktion 
+\begin_inset Formula $\mathbf{a}$
+\end_inset
+
+
+\series default
+ 
+\series bold
+\emph default
+ausführt
+\series default
+\emph on
+ und von dort an optimal handelt
+\emph default
+, was formal bedeutet:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Q^{\ast}\left(s,a\right)=\sum_{s^{\prime}\in S}T\left(s,a,s^{\prime}\right)\left[R\left(s,a,s^{\prime}\right)+\gamma\cdot V^{\ast}\left(s^{\prime}\right)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Hierbei lässt sich sofort erkennen, dass sowohl die V-Values als auch die
+ gewünschte Startegie implizit mitgeliefert wird:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+V\left(s\right) & =\underset{a\in A}{\textrm{max }}Q\left(s,a\right)\\
+\pi\left(s\right) & =\underset{a\in A}{\textrm{argmax }}Q\left(s,a\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Viele beliebte Reinforcement-Learning-Algorithmen basieren auf dem direkten
+ Lernen der Q-Values.
+ Einer der einfachsten ist hierbei 
+\series bold
+Q-learning
+\series default
+, welcher nur eine Form von Temporal Difference Learning auf Q-Values darstellt.
+ Die Update-Regel wird dabei lediglich wie folgt abgeändert:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Q\left(s,a\right)\leftarrow Q\left(s,a\right)+\alpha\left[r+\gamma\max_{a^{\prime}\in A}Q\left(s^{\prime},a^{\prime}\right)-Q\left(s,a\right)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Selbstverständlich benötigt Q-learning aber auch mehr Samples zum konvergieren,
+ da 
+\begin_inset Formula $\left|A\right|$
+\end_inset
+
+-mal so viele Parameter gelernt werden.
 \end_layout
 
 \begin_layout Subsection
 Exploration
 \end_layout
 
+\begin_layout Standard
+Während der Agent die Zustände erkundet, hat er stets die Auswahl zwischen
+ zwei generellen Lernstrategien.
+ Er muss entscheiden, ob er bisher schlecht erkundete Wege durch den Zustandsrau
+m besuchen möchte um mehr über sie herauszufinden, oder ob er sich an seine
+ aktuelle Strategie hält um ihre Richtigkeit zu überprüfen und vielleicht
+ weniger erforschte Zustände zu erforschen, die er erst durch bereits für
+ gut befundene Entscheidungen erreicht.
+\end_layout
+
+\begin_layout Standard
+Es gibt viele Methoden um einen geeigneten Trade-Off zwischen den beiden
+ Extrema zu finden.
+ Drei davon, welche auch beliebig untereinander kombiniert werden können,
+ werden hier vorgestellt:
+\end_layout
+
+\begin_layout Subsubsection
+Startbedingungen
+\end_layout
+
+\begin_layout Standard
+Zu Beginn vieler Reinforcement-Learning-Algorithmen werden Startwerte zufällig
+ initialisiert.
+ Wenn zum Beispiel die Q-Values allesamt höher initialisiert werden als
+ der höchte Wert, von dem man glaubt dass er von ihnen angenommen werden
+ kann, so werden die ersten Updates sehr häufig zu Verringerungen der Werte
+ führen.
+ Dadurch ist der Agent in den ersten Iterationen eher geneigt Wege auszuprobiere
+n, für die er noch keine Updates durchgeführt hat.
+\end_layout
+
+\begin_layout Standard
+Selbstverständlich ist diese Technik nur in den ersten Interationen sinnvoll
+ und sollte mit anderen Methoden kombiniert werden.
+\end_layout
+
+\begin_layout Subsubsection
+Die 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+-greedy Exploration
+\end_layout
+
+\begin_layout Standard
+Bei dieser Erkundungs-Technik wird der neue, namensgebende Hyperparameter
+ 
+\begin_inset Formula $0\leq\epsilon\leq1$
+\end_inset
+
+ eingeführt.
+ Vor jeder Aktion wirft der Agent nun eine unfaire Münze, so dass er mit
+ einer Chance von 
+\begin_inset Formula $\left(1-\epsilon\right)$
+\end_inset
+
+ nach seiner Strategie handelt, jedoch mit einer Chance von 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ eine völlig zufällige Aktion durchführt.
+\end_layout
+
+\begin_layout Standard
+Während 
+\begin_inset Formula $\epsilon$
+\end_inset
+
+ zur Test-Zeit für gewöhnlich auf 
+\begin_inset Formula $0$
+\end_inset
+
+ gesetzt wird, kann es zur Trainingszeit je nach Bedarf konstant sein, mit
+ der Zeit abnehmen oder anderweitig an die Gegebenheiten angepasst werden.
+\end_layout
+
+\begin_layout Subsubsection
+Erkundungs-Funktionen
+\end_layout
+
+\begin_layout Standard
+Um die Erkundung tatsächlich gezielt in unbekannte Regionen zu lenken, lässt
+ sich der Iterationsschritt in der Berechnung der Q-Values wie folgt anpassen:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Q\left(s,a\right)\leftarrow Q\left(s,a\right)+\alpha\left[r+\gamma\max_{a^{\prime}\in A}\left(Q\left(s^{\prime},a^{\prime}\right)+E\left(s^{\prime},a^{\prime}\right)\right)-Q\left(s,a\right)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Die Funktion 
+\begin_inset Formula $E\left(s^{\prime},a^{\prime}\right)$
+\end_inset
+
+ sinkt dabei jedes Mal, wenn die Aktion 
+\begin_inset Formula $a^{\prime}$
+\end_inset
+
+ im Zustand 
+\begin_inset Formula $s^{\prime}$
+\end_inset
+
+ ausgeführt wird.
+ Sie kann zum Beispiel die Form 
+\begin_inset Formula $E\left(s,a\right)=\nicefrac{k}{n_{s,a}}$
+\end_inset
+
+ haben, wobei 
+\begin_inset Formula $n_{s,a}$
+\end_inset
+
+ die Anzahl der Vorkommnisse des Zustand-Aktion-Tupels 
+\begin_inset Formula $\left(s,a\right)$
+\end_inset
+
+ ist.
+\end_layout
+
+\begin_layout Standard
+Da 
+\begin_inset Formula $E\left(s,a\right)$
+\end_inset
+
+ gegen 
+\begin_inset Formula $0$
+\end_inset
+
+ konvergiert, und fälschlicherweise gut klassifizierte Aktionen oft gewählt
+ und im Wert verringert werden, sollte beim Konvergieren der Q-Learing-Methode
+ der Wert der Erkundungsfunktion keinen merklichen Einfluss mehr auf die
+ gelernte Strategie haben.
+\end_layout
+
 \begin_layout Subsection
 State Features
 \end_layout
 
+\begin_layout Standard
+Gerade in realistischen Anwendugnen wird die Anzahl verschiedener Zustände
+ schnell unüberschaubar groß.
+ Eine ungefähre Vorstellung lässt sich über diese grobe, obere Abschätzung
+ der möglichen Zustände eines Flash-Spiels vermitteln:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename media/example_state_space.svg
+	lyxscale 20
+	width 50text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Man stelle sich ein Szenario vor, in dem der Reinforcement-Learning-Agent
+ lernen soll, ein einfaches Spiel im Stil des bekannten Videospiels 
+\begin_inset Quotes eld
+\end_inset
+
+Bomberman
+\begin_inset Quotes erd
+\end_inset
+
+ zu gewinnen.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Kurze Spiel-Erklärung?
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+Das Spielfeld in diesem Beispiel besteht aus 
+\begin_inset Formula $11\cdot13$
+\end_inset
+
+ Feldern, welche jeweils 15 verschiedene Zustände annehmen können.
+ Diese Zustände sind: leer, zerstörbarer Stein, unzerstörbarer Stein, Feuer
+ von je einem der 4 Spieler, Dynamit von je einem der 4 Spieler oder eines
+ von 4 sammelbaren Power-Ups.
+\end_layout
+
+\begin_layout Standard
+Allein dadurch bekommt bereits 
+\begin_inset Formula $15^{11\cdot13}\approx1.5\cdot10^{168}$
+\end_inset
+
+ verschiedene Zustände, bereits mehr als das Quadrat aller Atome im Universum.
+\end_layout
+
+\begin_layout Standard
+Wenn man jetzt noch betrachtet, dass in jedem dieser Zustände jeder der
+ vier Spieler auf jedem der 
+\begin_inset Formula $44\cdot44$
+\end_inset
+
+ Pixel jedes Feldes stehen könnte und möglicherweise die Zeit, die auf dem
+ Timer auf die Sekunde genau abgelesen werden kann, die Spielweise des Agenten
+ beeinflussen sollte und somit neue Zustände generiert, kommt man sogar
+ auf eine Kardinalität von 
+\begin_inset Formula $15^{11\cdot13}\cdot\left(13\cdot11\cdot44^{2}\right)^{4}\cdot\left(3\cdot60\right)\approx1.6\cdot10^{192}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Natürlich ist dies nur eine obere Abschätzung, da einige der Zustände sicherlich
+ unerreichbar sind.
+ Die ungefähre Größenordnung zeigt jedoch gut auf, wie schnell die Zustandsmenge
+ unermesslich groß werden kann.
+\end_layout
+
+\begin_layout Standard
+Nicht nur, dass der Agent für jeden dieser Zustände eine eigene Aktion für
+ die Strategie bzw.
+ einen Q-Value lernen muss, er kann auch nicht über verschiedene Zustände
+ hinweg abstrahieren und somit von Gelerntem über Zustände auf ähnliche
+ Zustände schließen.
+\end_layout
+
+\begin_layout Standard
+Aus diesem Grund lohnt es sich, statt eines Lookup-Tables für die Q-Values
+ eine Q-Funktion zu approximieren.
+ Eine Möglichkeit hierfür ist, nur bestimmte Features aus den Zuständen
+ zu extrahieren und mit diesen über eine gewichtete Summe die Q-Values anzunäher
+en.
+ Dies könnte beispielsweise diese Form haben:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Q\left(s,a\right)=w_{1}f_{1}\left(s,a\right)+w_{2}f_{2}\left(s,a\right)+\ldots+w_{n}f_{n}\left(s,a\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+An Stelle der Q-Values selbst werden nun die Gewichte zu ihrer Berechnung
+ gelernt.
+ Ein Update nachdem in Zustand 
+\begin_inset Formula $s$
+\end_inset
+
+ Aktion 
+\begin_inset Formula $a$
+\end_inset
+
+ ausgeführt wurde könnte dabei so aussehen:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+w_{i}\leftarrow w_{i}+\alpha\left[r+\gamma\max_{a^{\prime}\in A}Q\left(s^{\prime},a^{\prime}\right)-Q\left(s,a\right)\right]\cdot f_{i}\left(s,a\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Natürlich hängt hierbei der Erfolg der Methode sehr stark von den gewählten
+ Features ab.
+\end_layout
+
 \begin_layout Subsection
 Andere Algoritmen
+\end_layout
+
+\begin_layout Subsubsection
+SARSA
+\end_layout
+
+\begin_layout Subsubsection
+Double Q-learning
 \end_layout
 
 \begin_layout Subsection
