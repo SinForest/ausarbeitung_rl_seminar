@@ -7,11 +7,13 @@
 \geometry{verbose,tmargin=3cm,bmargin=3.5cm,lmargin=2.5cm,rmargin=2.5cm}
 \setlength{\parskip}{\smallskipamount}
 \setlength{\parindent}{0pt}
+\usepackage{babel}
 \usepackage{units}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
-\usepackage{babel}
+\usepackage[unicode=true]
+ {hyperref}
 \begin{document}
 
 \title{Einführung in das Reinforcement Learning}
@@ -27,13 +29,29 @@
 
 \section{Abstract}
 
+Diese schriftlichen Ausarbeitung zu meinem Seminar-Vortrag mit dem
+Thema ``Einführung in das Reinforcement Learning'' soll einen kurzen
+Überblick über das Thema Reinforcement Learning im allgemeinen geben.
+
+Der erste Teil erklärt dafür zunächst die generelle Problemstellung,
+für die Reinforcement Learning eine Lösung anbieten möchte. Hierbei
+soll erklärt werden, was ein Markov Entscheidungs-Problem ist, welche
+Notationen dafür benötigt werden und wie man es bei vorhandensein
+des vollständigen Modells lösen kann.
+
+Der zweite Teil der Ausarbeitung stellt Reinforcement Learning als
+Konzept vor, jede Probleme zu lösen wenn nicht alle Informationen
+direkt verfügbar sind. Hierbei werden hauptsächlich grundlegende Ideen
+von Algorithmen so wie Verbesserungen für eben jene vorgestellt, und
+zuletzt die aktuelle Relevanz des Konzepts bedingt durch Integrationsmöglichkeit
+von state-of-the-art-Methoden aufgezeigt.
 
 \section{Markov Entscheidungs-Probleme}
 
 Markov Entscheidungs-Probleme (kurz \textbf{MDP} für \emph{markov
 decision process}) sind ein Modell für Probleme, bei denen ein Agent
 versucht die größtmögliche Belohnung (\emph{reward}) zu erzielen.
-Er bewegt sich dazu durch eine Menge von Zuständen (\emph{states})
+Er bewegt sich dazu durch eine Menge von Zuständen (\emph{states}),
 indem er aus einer Menge von Aktionen (\emph{actions}) wählt. Welchen
 Zustand der Agent erreicht ist nicht deterministisch, die Wahrscheinlichkeiten
 sind jedoch nur von der gewählten Aktion und dem aktuellen Zustand
@@ -185,7 +203,8 @@ hat.
 Für MDPs, deren maximal erzielbare Belohung nach oben beschränkt ist,
 wird $V^{\left(k\right)}$ für $k\longrightarrow\infty$ konvergieren,
 da sich auch mit mehr Schritten kein besseres Ergebnis mehr erzielen
-lassen wird. Durch ein $\gamma<1$ kann dies <> werden.
+lassen wird. Durch ein $\gamma<1$ kann quasi eine Beschränkung simuliert
+werden.
 
 Für ein geeignet großes $k$ gilt also $V^{\left(k\right)}=V^{\ast}\pm\varepsilon$
 mit vernachlässigbarem $\varepsilon$ (\emph{z.B. kleiner als Maschinengenauigkeit
@@ -253,7 +272,7 @@ Als weiterer Ansatz bietet sich das \textbf{temporal difference learning}
 an. Die Idee dahinter ist, dass mit zufällig gewählten V-Values begonnen
 wird und diese langsam iterativ verbessert werden.
 
-Nach jeder Aktion (und deren Feedback) überprüft der Agent wie sich
+Nach jeder Aktion (und deren Feedback) überprüft der Agent, wie sich
 die ihm über V-Values versprochene erwartete Belohunung im Vergleich
 zur direkt erhaltenen Belohung und der nun in Aussicht stehenden erwarteten
 Belohnung verhält und passt die V-Values des eben verlassenen Zustandes
@@ -289,7 +308,7 @@ $\left|A\right|$ Werte pro State gespeichert, jeweils einer pro ausführbarer
 Aktion.
 
 Es ist also $Q\left(s,a\right)$ definiert als \emph{Gesamtbelohung,
-die der Agent zu erwarteten hat, wenn er eine Simulation in besagtem
+die der Agent zu erwarten hat, wenn er eine Simulation in besagtem
 Zustand startet, }\textbf{\emph{Aktion $\mathbf{a}$}}\emph{ }\textbf{ausführt}\emph{
 und von dort an optimal handelt}, was formal bedeutet:
 
@@ -336,7 +355,7 @@ kombiniert werden können, werden hier vorgestellt:
 
 Zu Beginn vieler Reinforcement-Learning-Algorithmen werden Startwerte
 zufällig initialisiert. Wenn zum Beispiel die Q-Values allesamt höher
-initialisiert werden als der höchte Wert, von dem man glaubt dass
+initialisiert werden als der höchte Wert, von dem man glaubt, dass
 er von ihnen angenommen werden kann, so werden die ersten Updates
 sehr häufig zu Verringerungen der Werte führen. Dadurch ist der Agent
 in den ersten Iterationen eher geneigt Wege auszuprobieren, für die
@@ -398,7 +417,7 @@ sind: leer, zerstörbarer Stein, unzerstörbarer Stein, Feuer von je
 einem der 4 Spieler, Dynamit von je einem der 4 Spieler oder eines
 von 4 sammelbaren Power-Ups.
 
-Allein dadurch bekommt bereits $15^{11\cdot13}\approx1.5\cdot10^{168}$
+Allein dadurch gibt es schon $15^{11\cdot13}\approx1.5\cdot10^{168}$
 verschiedene Zustände, bereits mehr als das Quadrat aller Atome im
 Universum.
 
@@ -430,7 +449,7 @@ Q\left(s,a\right)=w_{1}f_{1}\left(s,a\right)+w_{2}f_{2}\left(s,a\right)+\ldots+w
 
 An Stelle der Q-Values selbst werden nun die Gewichte zu ihrer Berechnung
 gelernt. Ein Update nachdem in Zustand $s$ Aktion $a$ ausgeführt
-wurde könnte dabei so aussehen:
+wurde, könnte dabei so aussehen:
 
 \[
 w_{i}\leftarrow w_{i}+\alpha\left[r+\gamma\max_{a^{\prime}\in A}Q\left(s^{\prime},a^{\prime}\right)-Q\left(s,a\right)\right]\cdot f_{i}\left(s,a\right)
@@ -439,17 +458,122 @@ w_{i}\leftarrow w_{i}+\alpha\left[r+\gamma\max_{a^{\prime}\in A}Q\left(s^{\prime
 Natürlich hängt hierbei der Erfolg der Methode sehr stark von den
 gewählten Features ab.
 
-\subsection{Andere Algoritmen}
+\subsection{Andere Algorithmen}
+
+Ausser naivem Q-learning gibt es noch viele Verbesserungen am generellen
+Algorithmus, von denen zwei hier vorgestellt werden sollen:
 
 \subsubsection{SARSA}
 
+Der SARSA-Algorithmus (kurz für State-Action-Reward-State-Action)
+ist eine Abwandlung von Q-learning, die statt des Q-Values für die
+optimale nächste Aktion den Wert der tatsächlich als nächstes ausgeführten
+Aktion nutzt, um in den Updates den nächsten Zustand zu bewerten.
+
+Da der Einfluss von zum Beispiel Exploration Strategien für gewöhnlich
+gegen Ende des Trainings gegen null geht, weicht der Agent dann nurnoch
+sehr selten von der für ihn optimalen Policy ab, wodurch der Unterschied
+zu Q-learning gering wird und SARSA eine optimale Policy lernt.
+
 \subsubsection{Double Q-learning}
+
+Q-learning tendiert dazu, unter gewissen Umständen den Wert von Zustand-Aktions-Paaren
+zu überschätzen. Dies kommt unter anderem daher, dass sich durch das
+Suchen des Maximums in der Update-Regel Überschätzungen von einzelnen
+Werten durch viele Updates ziehen kann.
+
+Um die Idee von Q-learning zu skizzieren, sollte man sich folgende
+alternative Schreibweise der Update-Rule anschauen:
+
+\[
+Q\left(s,a\right)\leftarrow Q\left(s,a\right)+\alpha\left[r+\gamma Q\left(s^{\prime},\underset{a^{\prime}\in A}{\text{argmax }}Q\left(s^{\prime},a^{\prime}\right)\right)-Q\left(s,a\right)\right]
+\]
+
+In Double Q-learning werden nun zwei Q-functions gelernt. In jedem
+Update wird dann eine von beiden zufällig ausgewählt und bekommt den
+Namen $Q_{1}$, die andere heißt $Q_{2}$. $Q_{1}$ ist die Funktion,
+die in diesem Schritt geupdatet wird. Über sie wird auch ermittelt,
+welche Aktion im nächsten Schritt optimal wäre. Der Wert der optimalen
+Aktion wird jedoch aus $Q_{2}$ ausgelesen.
+
+\[
+Q_{1}\left(s,a\right)\leftarrow Q_{1}\left(s,a\right)+\alpha\left[r+\gamma Q_{2}\left(s^{\prime},\underset{a^{\prime}\in A}{\text{argmax }}Q_{1}\left(s^{\prime},a^{\prime}\right)\right)-Q_{1}\left(s,a\right)\right]
+\]
+
+Wichtig hierbei ist, dass die Zuweisung von $Q_{1}$ und $Q_{2}$
+vor jedem Update (oder zumindest regelmäßig) geschieht, damit beide
+Funktionen gleichmäßig aktualisiert werden.
 
 \subsection{Deep Q-Learning}
 
+Um gut und schnell Q-Values zu lernen benötigt man eine starke und
+einfach zu trainierende Methode zur Funktionsapproximierung, da bei
+realistischen Kardinalitäten der Zustands-Menge keine Lookup-Tables
+benutzt werden können. Häufig scheitern Versuche aber auch daran,
+dass von Hand extrahierte Features eines Zustandes dem Agenten nicht
+die Informationen zukommen lassen, die er für eine optimale Entscheidungsfindung
+benötigen würde.
+
+In den letzten Jahren haben sich neuronale Netze mehr und mehr als
+Konzept der Wahl in beiden Problemfällen erwiesen. Sie können beliebige
+Funktionen approximieren, lassen sich gut und sehr einfach auf GPUs
+trainieren und lernen überraschen präzise Features zu extrahieren,
+vor allem wenn diese im Rest des Netzwerks weiterverarbeitet werden.
+Als kleinen Bonus haben sich in den letzten Jahren Netzwerk-Architekturen
+für ettliche Problemfälle etabliert, weshalb es egal ist, ob die Umgebung
+dem Agenten den Zustand in Form von Zahlen, Bildern (Video-Kamera,
+Video-Spiel) oder sogar Audiospuren oder Text zukommen lässt.
+
+Das Neuronale Netz bekommt beim Deep Q-learning sämtliche Informationen
+der Umgebung als Input, möglicherweise zusätzlich sogar zwischengespeicherte
+Zusatzinfomationen wie die Aktionen und Zustände der letzten $n$
+Aktionen. Als Output wird ein $\left|A\right|$-dimensionaler Vektor
+erwartet, der die Q-Values zu allen Aktionen beinhaltet.
+
+Da Neuonale Netze zum Trainieren ein Target brauchen, also ein Ergebnis,
+das der Trainierende statt des tatsächlichen Ergebnisses gewünscht
+hätte, wird als Target genau das definiert, was im Kapitel über Temporal
+Difference Learning als ``erfahrene Belohnung'' bezeichnet wurde,
+also hier $r+\gamma\max_{a^{\prime}\in A}Q\left(s^{\prime},a^{\prime}\right)$.
+
+Da bei Neuronalen Netzen Training mit vielen Daten am Stück wesentlich
+effizienter umgesetzt werden kann, empfiehlt es sich hier besonders
+mit einer fixierten Strategie Erfahrung zu sammeln um dann mit dieser
+zu trainieren.
+
 \section{Fazit}
 
-\section{Kurzgeschichte (?)}
+Reinfoecement Learning stellt ein gutes Konzept dar, um Probleme zu
+lösen, welche sich als MDP formulieren lassen. Diese Klasse von Problemen
+mag im ersten Moment eher klein wirken, ist meiner Meinung nach jedoch
+viel größer als man denkt. Durch künstliche erweiterung des State-Spaces
+(was durch approximieren von Funktionen eher weniger ins Gewicht fällt)
+und zusätzlichen Variablen lässt sich Reinforcement Learning auch
+in Situationen verwenden, in denen die Zukunft entgegen der Markov-Eigenschaft
+sehr wohl von der Vergangenheit abhängt. Das Konzept der einen Aktion
+lässt sich ebenfalls sehr einfach auf mehrere parallele Aktionen transformieren,
+was das Verfahren noch universeller macht.
+
+Reinforcement Learning stößt aber zum Beispiel dort an seine Grenzen,
+wo es keine natürlich definierten Belohnungen gibt und es Menschen
+sehr schwer fällt, geeignete und generalisierte Belohungen zu definieren.
+Auch in Fällen, in denen richtiges Handeln sehr verzögert belohnt
+wird, kann Reinforcement Learning versagen, da es zwar konvergieren
+könnte, dazu jedoch nicht hinnehmbare Mengen an Zeit benötigt.
+
+\pagebreak{}
 
 \section{Quellen}
+\begin{description}
+\item [{AI~Course~CS188~(University~Berkley)}] \href{http://ai.berkeley.edu/home.html}{http://ai.berkeley.edu/home.html}\\
+\href{https://www.youtube.com/channel/UCB4_W1V-KfwpTLxH9jG1_iA/videos}{https://www.youtube.com/channel/UCB4\_{}W1V-KfwpTLxH9jG1\_{}iA/videos}
+\end{description}
+\textbf{Harmon, Mance E. and Stephanie S. Harmon. \textquotedblleft Reinforcement
+Learning: A Tutorial.\textquotedblright{} (1996).}
+\begin{description}
+\item [{Q-Learning~(Code)}] \href{https://github.com/farizrahman4u/qlearning4k }{https://github.com/farizrahman4u/qlearning4k }
+\item [{SARSA~im~Detail}] \href{https://studywolf.wordpress.com/2013/07/01/reinforcement-learning-sarsa-vs-q-learning/}{https://studywolf.wordpress.com/2013/07/01/reinforcement-learning-sarsa-vs-q-learning/}
+\item [{Double-Q-Learning}] \href{https://arxiv.org/abs/1509.06461}{arXiv:1509.06461v3 [cs.LG]}
+\end{description}
+
 \end{document}

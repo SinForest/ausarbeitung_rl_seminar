@@ -108,16 +108,35 @@ Abstract
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-ToDo
-\end_layout
-
+Diese schriftlichen Ausarbeitung zu meinem Seminar-Vortrag mit dem Thema
+ 
+\begin_inset Quotes eld
 \end_inset
 
+Einführung in das Reinforcement Learning
+\begin_inset Quotes erd
+\end_inset
 
+ soll einen kurzen Überblick über das Thema Reinforcement Learning im allgemeine
+n geben.
+\end_layout
+
+\begin_layout Standard
+Der erste Teil erklärt dafür zunächst die generelle Problemstellung, für
+ die Reinforcement Learning eine Lösung anbieten möchte.
+ Hierbei soll erklärt werden, was ein Markov Entscheidungs-Problem ist,
+ welche Notationen dafür benötigt werden und wie man es bei vorhandensein
+ des vollständigen Modells lösen kann.
+\end_layout
+
+\begin_layout Standard
+Der zweite Teil der Ausarbeitung stellt Reinforcement Learning als Konzept
+ vor, jede Probleme zu lösen wenn nicht alle Informationen direkt verfügbar
+ sind.
+ Hierbei werden hauptsächlich grundlegende Ideen von Algorithmen so wie
+ Verbesserungen für eben jene vorgestellt, und zuletzt die aktuelle Relevanz
+ des Konzepts bedingt durch Integrationsmöglichkeit von state-of-the-art-Methode
+n aufgezeigt.
 \end_layout
 
 \begin_layout Section
@@ -143,7 +162,7 @@ reward
 \emph on
 states
 \emph default
-) indem er aus einer Menge von Aktionen (
+), indem er aus einer Menge von Aktionen (
 \emph on
 actions
 \emph default
@@ -679,17 +698,7 @@ Für MDPs, deren maximal erzielbare Belohung nach oben beschränkt ist, wird
 \begin_inset Formula $\gamma<1$
 \end_inset
 
- kann dies <
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-VERB
-\end_layout
-
-\end_inset
-
-> werden.
+ kann quasi eine Beschränkung simuliert werden.
 \end_layout
 
 \begin_layout Standard
@@ -888,7 +897,7 @@ temporal difference learning
 \end_layout
 
 \begin_layout Standard
-Nach jeder Aktion (und deren Feedback) überprüft der Agent wie sich die
+Nach jeder Aktion (und deren Feedback) überprüft der Agent, wie sich die
  ihm über V-Values versprochene erwartete Belohunung im Vergleich zur direkt
  erhaltenen Belohung und der nun in Aussicht stehenden erwarteten Belohnung
  verhält und passt die V-Values des eben verlassenen Zustandes geringfügig
@@ -1023,8 +1032,8 @@ Es ist also
 
  definiert als 
 \emph on
-Gesamtbelohung, die der Agent zu erwarteten hat, wenn er eine Simulation
- in besagtem Zustand startet, 
+Gesamtbelohung, die der Agent zu erwarten hat, wenn er eine Simulation in
+ besagtem Zustand startet, 
 \series bold
 Aktion 
 \begin_inset Formula $\mathbf{a}$
@@ -1131,7 +1140,7 @@ Startbedingungen
 Zu Beginn vieler Reinforcement-Learning-Algorithmen werden Startwerte zufällig
  initialisiert.
  Wenn zum Beispiel die Q-Values allesamt höher initialisiert werden als
- der höchte Wert, von dem man glaubt dass er von ihnen angenommen werden
+ der höchte Wert, von dem man glaubt, dass er von ihnen angenommen werden
  kann, so werden die ersten Updates sehr häufig zu Verringerungen der Werte
  führen.
  Dadurch ist der Agent in den ersten Iterationen eher geneigt Wege auszuprobiere
@@ -1304,7 +1313,7 @@ Das Spielfeld in diesem Beispiel besteht aus
 \end_layout
 
 \begin_layout Standard
-Allein dadurch bekommt bereits 
+Allein dadurch gibt es schon 
 \begin_inset Formula $15^{11\cdot13}\approx1.5\cdot10^{168}$
 \end_inset
 
@@ -1373,7 +1382,7 @@ An Stelle der Q-Values selbst werden nun die Gewichte zu ihrer Berechnung
 \begin_inset Formula $a$
 \end_inset
 
- ausgeführt wurde könnte dabei so aussehen:
+ ausgeführt wurde, könnte dabei so aussehen:
 \end_layout
 
 \begin_layout Standard
@@ -1393,31 +1402,306 @@ Natürlich hängt hierbei der Erfolg der Methode sehr stark von den gewählten
 \end_layout
 
 \begin_layout Subsection
-Andere Algoritmen
+Andere Algorithmen
+\end_layout
+
+\begin_layout Standard
+Ausser naivem Q-learning gibt es noch viele Verbesserungen am generellen
+ Algorithmus, von denen zwei hier vorgestellt werden sollen:
 \end_layout
 
 \begin_layout Subsubsection
 SARSA
 \end_layout
 
+\begin_layout Standard
+Der SARSA-Algorithmus (kurz für State-Action-Reward-State-Action) ist eine
+ Abwandlung von Q-learning, die statt des Q-Values für die optimale nächste
+ Aktion den Wert der tatsächlich als nächstes ausgeführten Aktion nutzt,
+ um in den Updates den nächsten Zustand zu bewerten.
+\end_layout
+
+\begin_layout Standard
+Da der Einfluss von zum Beispiel Exploration Strategien für gewöhnlich gegen
+ Ende des Trainings gegen null geht, weicht der Agent dann nurnoch sehr
+ selten von der für ihn optimalen Policy ab, wodurch der Unterschied zu
+ Q-learning gering wird und SARSA eine optimale Policy lernt.
+\end_layout
+
 \begin_layout Subsubsection
 Double Q-learning
+\end_layout
+
+\begin_layout Standard
+Q-learning tendiert dazu, unter gewissen Umständen den Wert von Zustand-Aktions-
+Paaren zu überschätzen.
+ Dies kommt unter anderem daher, dass sich durch das Suchen des Maximums
+ in der Update-Regel Überschätzungen von einzelnen Werten durch viele Updates
+ ziehen kann.
+\end_layout
+
+\begin_layout Standard
+Um die Idee von Q-learning zu skizzieren, sollte man sich folgende alternative
+ Schreibweise der Update-Rule anschauen:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Q\left(s,a\right)\leftarrow Q\left(s,a\right)+\alpha\left[r+\gamma Q\left(s^{\prime},\underset{a^{\prime}\in A}{\text{argmax }}Q\left(s^{\prime},a^{\prime}\right)\right)-Q\left(s,a\right)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In Double Q-learning werden nun zwei Q-functions gelernt.
+ In jedem Update wird dann eine von beiden zufällig ausgewählt und bekommt
+ den Namen 
+\begin_inset Formula $Q_{1}$
+\end_inset
+
+, die andere heißt 
+\begin_inset Formula $Q_{2}$
+\end_inset
+
+.
+ 
+\begin_inset Formula $Q_{1}$
+\end_inset
+
+ ist die Funktion, die in diesem Schritt geupdatet wird.
+ Über sie wird auch ermittelt, welche Aktion im nächsten Schritt optimal
+ wäre.
+ Der Wert der optimalen Aktion wird jedoch aus 
+\begin_inset Formula $Q_{2}$
+\end_inset
+
+ ausgelesen.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Q_{1}\left(s,a\right)\leftarrow Q_{1}\left(s,a\right)+\alpha\left[r+\gamma Q_{2}\left(s^{\prime},\underset{a^{\prime}\in A}{\text{argmax }}Q_{1}\left(s^{\prime},a^{\prime}\right)\right)-Q_{1}\left(s,a\right)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Wichtig hierbei ist, dass die Zuweisung von 
+\begin_inset Formula $Q_{1}$
+\end_inset
+
+ und 
+\begin_inset Formula $Q_{2}$
+\end_inset
+
+ vor jedem Update (oder zumindest regelmäßig) geschieht, damit beide Funktionen
+ gleichmäßig aktualisiert werden.
 \end_layout
 
 \begin_layout Subsection
 Deep Q-Learning
 \end_layout
 
+\begin_layout Standard
+Um gut und schnell Q-Values zu lernen benötigt man eine starke und einfach
+ zu trainierende Methode zur Funktionsapproximierung, da bei realistischen
+ Kardinalitäten der Zustands-Menge keine Lookup-Tables benutzt werden können.
+ Häufig scheitern Versuche aber auch daran, dass von Hand extrahierte Features
+ eines Zustandes dem Agenten nicht die Informationen zukommen lassen, die
+ er für eine optimale Entscheidungsfindung benötigen würde.
+\end_layout
+
+\begin_layout Standard
+In den letzten Jahren haben sich neuronale Netze mehr und mehr als Konzept
+ der Wahl in beiden Problemfällen erwiesen.
+ Sie können beliebige Funktionen approximieren, lassen sich gut und sehr
+ einfach auf GPUs trainieren und lernen überraschen präzise Features zu
+ extrahieren, vor allem wenn diese im Rest des Netzwerks weiterverarbeitet
+ werden.
+ Als kleinen Bonus haben sich in den letzten Jahren Netzwerk-Architekturen
+ für ettliche Problemfälle etabliert, weshalb es egal ist, ob die Umgebung
+ dem Agenten den Zustand in Form von Zahlen, Bildern (Video-Kamera, Video-Spiel)
+ oder sogar Audiospuren oder Text zukommen lässt.
+\end_layout
+
+\begin_layout Standard
+Das Neuronale Netz bekommt beim Deep Q-learning sämtliche Informationen
+ der Umgebung als Input, möglicherweise zusätzlich sogar zwischengespeicherte
+ Zusatzinfomationen wie die Aktionen und Zustände der letzten 
+\begin_inset Formula $n$
+\end_inset
+
+ Aktionen.
+ Als Output wird ein 
+\begin_inset Formula $\left|A\right|$
+\end_inset
+
+-dimensionaler Vektor erwartet, der die Q-Values zu allen Aktionen beinhaltet.
+\end_layout
+
+\begin_layout Standard
+Da Neuonale Netze zum Trainieren ein Target brauchen, also ein Ergebnis,
+ das der Trainierende statt des tatsächlichen Ergebnisses gewünscht hätte,
+ wird als Target genau das definiert, was im Kapitel über Temporal Difference
+ Learning als 
+\begin_inset Quotes eld
+\end_inset
+
+erfahrene Belohnung
+\begin_inset Quotes erd
+\end_inset
+
+ bezeichnet wurde, also hier 
+\begin_inset Formula $r+\gamma\max_{a^{\prime}\in A}Q\left(s^{\prime},a^{\prime}\right)$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Da bei Neuronalen Netzen Training mit vielen Daten am Stück wesentlich effizient
+er umgesetzt werden kann, empfiehlt es sich hier besonders mit einer fixierten
+ Strategie Erfahrung zu sammeln um dann mit dieser zu trainieren.
+\end_layout
+
 \begin_layout Section
 Fazit
 \end_layout
 
-\begin_layout Section
-Kurzgeschichte (?)
+\begin_layout Standard
+Reinfoecement Learning stellt ein gutes Konzept dar, um Probleme zu lösen,
+ welche sich als MDP formulieren lassen.
+ Diese Klasse von Problemen mag im ersten Moment eher klein wirken, ist
+ meiner Meinung nach jedoch viel größer als man denkt.
+ Durch künstliche erweiterung des State-Spaces (was durch approximieren
+ von Funktionen eher weniger ins Gewicht fällt) und zusätzlichen Variablen
+ lässt sich Reinforcement Learning auch in Situationen verwenden, in denen
+ die Zukunft entgegen der Markov-Eigenschaft sehr wohl von der Vergangenheit
+ abhängt.
+ Das Konzept der einen Aktion lässt sich ebenfalls sehr einfach auf mehrere
+ parallele Aktionen transformieren, was das Verfahren noch universeller
+ macht.
+\end_layout
+
+\begin_layout Standard
+Reinforcement Learning stößt aber zum Beispiel dort an seine Grenzen, wo
+ es keine natürlich definierten Belohnungen gibt und es Menschen sehr schwer
+ fällt, geeignete und generalisierte Belohungen zu definieren.
+ Auch in Fällen, in denen richtiges Handeln sehr verzögert belohnt wird,
+ kann Reinforcement Learning versagen, da es zwar konvergieren könnte, dazu
+ jedoch nicht hinnehmbare Mengen an Zeit benötigt.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
 Quellen
+\end_layout
+
+\begin_layout Description
+AI
+\begin_inset space ~
+\end_inset
+
+Course
+\begin_inset space ~
+\end_inset
+
+CS188
+\begin_inset space ~
+\end_inset
+
+(University
+\begin_inset space ~
+\end_inset
+
+Berkley) 
+\begin_inset CommandInset href
+LatexCommand href
+target "http://ai.berkeley.edu/home.html"
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+target "https://www.youtube.com/channel/UCB4_W1V-KfwpTLxH9jG1_iA/videos"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Harmon, Mance E.
+ and Stephanie S.
+ Harmon.
+ “Reinforcement Learning: A Tutorial.” (1996).
+\end_layout
+
+\begin_layout Description
+Q-Learning
+\begin_inset space ~
+\end_inset
+
+(Code) 
+\begin_inset CommandInset href
+LatexCommand href
+target "https://github.com/farizrahman4u/qlearning4k "
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+SARSA
+\begin_inset space ~
+\end_inset
+
+im
+\begin_inset space ~
+\end_inset
+
+Detail 
+\begin_inset CommandInset href
+LatexCommand href
+target "https://studywolf.wordpress.com/2013/07/01/reinforcement-learning-sarsa-vs-q-learning/"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+Double-Q-Learning 
+\begin_inset CommandInset href
+LatexCommand href
+name "arXiv:1509.06461v3 [cs.LG]"
+target "https://arxiv.org/abs/1509.06461"
+
+\end_inset
+
+
 \end_layout
 
 \end_body
