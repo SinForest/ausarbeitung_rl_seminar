@@ -31,12 +31,12 @@
 
 Diese schriftlichen Ausarbeitung zu meinem Seminar-Vortrag mit dem
 Thema ``Einführung in das Reinforcement Learning'' soll einen kurzen
-Überblick über das Thema Reinforcement Learning im allgemeinen geben.
+Überblick über das Thema Reinforcement Learning im Allgemeinen geben.
 
 Der erste Teil erklärt dafür zunächst die generelle Problemstellung,
 für die Reinforcement Learning eine Lösung anbieten möchte. Hierbei
 soll erklärt werden, was ein Markov Entscheidungs-Problem ist, welche
-Notationen dafür benötigt werden und wie man es bei vorhandensein
+Notationen dafür benötigt werden und wie man es bei Vorhandensein
 des vollständigen Modells lösen kann.
 
 Der zweite Teil der Ausarbeitung stellt Reinforcement Learning als
@@ -325,7 +325,7 @@ V\left(s\right) & =\underset{a\in A}{\textrm{max }}Q\left(s,a\right)\\
 \end{align*}
 
 Viele beliebte Reinforcement-Learning-Algorithmen basieren auf dem
-direkten Lernen der Q-Values. Einer der einfachsten ist hierbei \textbf{Q-learning},
+direkten Lernen der Q-Values. Einer der einfachsten ist hierbei \textbf{Q-Learning},
 welcher nur eine Form von Temporal Difference Learning auf Q-Values
 darstellt. Die Update-Regel wird dabei lediglich wie folgt abgeändert:
 
@@ -333,7 +333,7 @@ darstellt. Die Update-Regel wird dabei lediglich wie folgt abgeändert:
 Q\left(s,a\right)\leftarrow Q\left(s,a\right)+\alpha\left[r+\gamma\max_{a^{\prime}\in A}Q\left(s^{\prime},a^{\prime}\right)-Q\left(s,a\right)\right]
 \]
 
-Selbstverständlich benötigt Q-learning aber auch mehr Samples zum
+Selbstverständlich benötigt Q-Learning aber auch mehr Samples zum
 konvergieren, da $\left|A\right|$-mal so viele Parameter gelernt
 werden.
 
@@ -400,7 +400,7 @@ keinen merklichen Einfluss mehr auf die gelernte Strategie haben.
 
 \subsection{State Features}
 
-Gerade in realistischen Anwendugnen wird die Anzahl verschiedener
+Gerade in realistischen Anwendungen wird die Anzahl verschiedener
 Zustände schnell unüberschaubar groß. Eine ungefähre Vorstellung lässt
 sich über diese grobe, obere Abschätzung der möglichen Zustände eines
 Flash-Spiels vermitteln:
@@ -460,36 +460,37 @@ gewählten Features ab.
 
 \subsection{Andere Algorithmen}
 
-Ausser naivem Q-learning gibt es noch viele Verbesserungen am generellen
+Ausser naivem Q-Learning gibt es noch viele Verbesserungen am generellen
 Algorithmus, von denen zwei hier vorgestellt werden sollen:
 
 \subsubsection{SARSA}
 
 Der SARSA-Algorithmus (kurz für State-Action-Reward-State-Action)
-ist eine Abwandlung von Q-learning, die statt des Q-Values für die
+ist eine Abwandlung von Q-Learning, die statt des Q-Values für die
 optimale nächste Aktion den Wert der tatsächlich als nächstes ausgeführten
 Aktion nutzt, um in den Updates den nächsten Zustand zu bewerten.
 
 Da der Einfluss von zum Beispiel Exploration Strategien für gewöhnlich
-gegen Ende des Trainings gegen null geht, weicht der Agent dann nurnoch
-sehr selten von der für ihn optimalen Policy ab, wodurch der Unterschied
-zu Q-learning gering wird und SARSA eine optimale Policy lernt.
+gegen Ende des Trainings gegen null geht, weicht der Agent dann nur
+noch sehr selten von der für ihn optimalen Policy ab, wodurch der
+Unterschied zu Q-Learning gering wird und SARSA eine optimale Policy
+lernt.
 
-\subsubsection{Double Q-learning}
+\subsubsection{Double Q-Learning}
 
-Q-learning tendiert dazu, unter gewissen Umständen den Wert von Zustand-Aktions-Paaren
+Q-Learning tendiert dazu, unter gewissen Umständen den Wert von Zustand-Aktions-Paaren
 zu überschätzen. Dies kommt unter anderem daher, dass sich durch das
 Suchen des Maximums in der Update-Regel Überschätzungen von einzelnen
 Werten durch viele Updates ziehen kann.
 
-Um die Idee von Q-learning zu skizzieren, sollte man sich folgende
+Um die Idee von Q-Learning zu skizzieren, sollte man sich folgende
 alternative Schreibweise der Update-Rule anschauen:
 
 \[
 Q\left(s,a\right)\leftarrow Q\left(s,a\right)+\alpha\left[r+\gamma Q\left(s^{\prime},\underset{a^{\prime}\in A}{\text{argmax }}Q\left(s^{\prime},a^{\prime}\right)\right)-Q\left(s,a\right)\right]
 \]
 
-In Double Q-learning werden nun zwei Q-functions gelernt. In jedem
+In Double Q-Learning werden nun zwei Q-Functions gelernt. In jedem
 Update wird dann eine von beiden zufällig ausgewählt und bekommt den
 Namen $Q_{1}$, die andere heißt $Q_{2}$. $Q_{1}$ ist die Funktion,
 die in diesem Schritt geupdatet wird. Über sie wird auch ermittelt,
@@ -517,20 +518,20 @@ benötigen würde.
 In den letzten Jahren haben sich neuronale Netze mehr und mehr als
 Konzept der Wahl in beiden Problemfällen erwiesen. Sie können beliebige
 Funktionen approximieren, lassen sich gut und sehr einfach auf GPUs
-trainieren und lernen überraschen präzise Features zu extrahieren,
+trainieren und lernen überraschend präzise Features zu extrahieren,
 vor allem wenn diese im Rest des Netzwerks weiterverarbeitet werden.
 Als kleinen Bonus haben sich in den letzten Jahren Netzwerk-Architekturen
-für ettliche Problemfälle etabliert, weshalb es egal ist, ob die Umgebung
+für etliche Problemfälle etabliert, weshalb es egal ist, ob die Umgebung
 dem Agenten den Zustand in Form von Zahlen, Bildern (Video-Kamera,
 Video-Spiel) oder sogar Audiospuren oder Text zukommen lässt.
 
-Das Neuronale Netz bekommt beim Deep Q-learning sämtliche Informationen
+Das Neuronale Netz bekommt beim Deep Q-Learning sämtliche Informationen
 der Umgebung als Input, möglicherweise zusätzlich sogar zwischengespeicherte
 Zusatzinfomationen wie die Aktionen und Zustände der letzten $n$
 Aktionen. Als Output wird ein $\left|A\right|$-dimensionaler Vektor
 erwartet, der die Q-Values zu allen Aktionen beinhaltet.
 
-Da Neuonale Netze zum Trainieren ein Target brauchen, also ein Ergebnis,
+Da Neuronale Netze zum Trainieren ein Target brauchen, also ein Ergebnis,
 das der Trainierende statt des tatsächlichen Ergebnisses gewünscht
 hätte, wird als Target genau das definiert, was im Kapitel über Temporal
 Difference Learning als ``erfahrene Belohnung'' bezeichnet wurde,
@@ -546,8 +547,8 @@ zu trainieren.
 Reinfoecement Learning stellt ein gutes Konzept dar, um Probleme zu
 lösen, welche sich als MDP formulieren lassen. Diese Klasse von Problemen
 mag im ersten Moment eher klein wirken, ist meiner Meinung nach jedoch
-viel größer als man denkt. Durch künstliche erweiterung des State-Spaces
-(was durch approximieren von Funktionen eher weniger ins Gewicht fällt)
+viel größer als man denkt. Durch künstliche Erweiterung des State-Spaces
+(was durch Approximieren von Funktionen eher weniger ins Gewicht fällt)
 und zusätzlichen Variablen lässt sich Reinforcement Learning auch
 in Situationen verwenden, in denen die Zukunft entgegen der Markov-Eigenschaft
 sehr wohl von der Vergangenheit abhängt. Das Konzept der einen Aktion
